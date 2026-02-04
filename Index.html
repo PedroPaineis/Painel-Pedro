@@ -1,0 +1,113 @@
+html
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { background: transparent; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: Arial; overflow: hidden; }
+        #painel { width: 260px; background: red; padding: 20px; border-radius: 10px; text-align: center; border: 3px solid black; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        h2 { color: black; font-size: 18px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        input { width: 90%; padding: 12px; margin: 10px 0; background: black; color: red; border: 1px solid #333; text-align: center; outline: none; border-radius: 5px; }
+        button, .btn { width: 100%; padding: 12px 0; margin: 5px 0; background: black; color: red; border: none; font-weight: bold; cursor: pointer; display: block; text-decoration: none; font-size: 11px; border-radius: 5px; text-transform: uppercase; }
+        .opts { text-align: left; color: black; font-weight: bold; margin: 15px 0; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 5px; }
+        label { display: block; margin: 10px; font-size: 13px; cursor: pointer; }
+        #menu { display: none; }
+        
+        /* BARRA DE CARREGAMENTO */
+        #barContainer { width: 100%; background: black; height: 12px; border-radius: 6px; margin: 15px 0; display: none; overflow: hidden; border: 1px solid #333; }
+        #bar { width: 0%; height: 100%; background: #ff0000; transition: background 0.3s; }
+        #statusTxt { color: black; font-size: 11px; font-weight: bold; display: none; margin-bottom: 5px; }
+        
+        /* EFEITO NEON TERMINAL */
+        .neon-green { background: #00ff00 !important; box-shadow: 0 0 10px #00ff00; }
+    </style>
+</head>
+<body>
+    <div id="painel">
+        <div id="login">
+            <h2>LOGIN</h2>
+            <input type="password" id="pass" placeholder="SENHA">
+            <button onclick="check()">ENTRAR</button>
+        </div>
+
+        <div id="menu">
+            <h2>PEDRO PAINEIS</h2>
+            <div class="opts">
+                <label><input type="checkbox"> HS CABEÇA 100%</label>
+                <label><input type="checkbox"> HS PEITO</label>
+                <label><input type="checkbox"> ANTIBAN V3</label>
+            </div>
+
+            <div id="statusTxt">INJETANDO: 0%</div>
+            <div id="barContainer"><div id="bar"></div></div>
+
+            <button id="btnInj" onclick="injetar()">INJETAR MODS</button>
+            <button class="btn" onclick="forcarAbertura()">ABRIR JOGO DIRETO</button>
+            <button style="color:white; margin-top:10px; font-size:9px;" onclick="location.reload()">SAIR</button>
+        </div>
+    </div>
+
+    <script>
+        function playBip() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = context.createOscillator();
+            const gain = context.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(1000, context.currentTime);
+            gain.gain.setValueAtTime(0.1, context.currentTime);
+            osc.connect(gain);
+            gain.connect(context.destination);
+            osc.start();
+            osc.stop(context.currentTime + 0.3);
+        }
+
+        function check() {
+            if(document.getElementById('pass').value === "PedroPaineis") {
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('menu').style.display = 'block';
+            } else { alert("SENHA INCORRETA!"); }
+        }
+
+        function injetar() {
+            const btn = document.getElementById('btnInj');
+            const barCont = document.getElementById('barContainer');
+            const bar = document.getElementById('bar');
+            const status = document.getElementById('statusTxt');
+            
+            btn.style.display = 'none';
+            barCont.style.display = 'block';
+            status.style.display = 'block';
+            bar.classList.remove('neon-green');
+            bar.style.backgroundColor = '#ff0000';
+            
+            let width = 0;
+            const id = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(id);
+                    // Ativa o NEON VERDE ao finalizar
+                    bar.classList.add('neon-green');
+                    playBip();
+                    status.innerHTML = "INJETADO COM SUCESSO!";
+                    setTimeout(() => {
+                        alert("MODS INJETADOS!");
+                        status.style.display = 'none';
+                        barCont.style.display = 'none';
+                        btn.style.display = 'block';
+                        width = 0;
+                        bar.style.width = '0%';
+                    }, 800);
+                } else {
+                    width++;
+                    bar.style.width = width + '%';
+                    status.innerHTML = "INJETANDO: " + width + "%";
+                    // Muda para verde quando estiver quase acabando
+                    if(width > 90) bar.style.backgroundColor = "#00ff00";
+                }
+            }, 40);
+        }
+
+        function forcarAbertura() {
+            window.open("https://play.google.com/store/apps/details?id=com.dts.freefireth", '_blank');
+        }
+    </script>
+</body>
+</html>
